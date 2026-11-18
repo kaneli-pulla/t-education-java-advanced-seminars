@@ -33,7 +33,7 @@ public final class QuoteSubscriptionService implements AutoCloseable {
     /**
      * Платформенные worker-потоки, выполняющие сетевые запросы вне потока dispatcher.
      */
-    private final TreiberThreadPool pool;
+    private final SimpleThreadPool pool;
     /**
      * Единственный поток, который выбирает подписки с наступившим сроком запуска.
      */
@@ -63,7 +63,7 @@ public final class QuoteSubscriptionService implements AutoCloseable {
         this.client = Objects.requireNonNull(client);
         this.resultHandler = Objects.requireNonNull(resultHandler);
         // NOTICE: сбой получателя результатов идёт в отдельный канал, не обратно в тот же callback.
-        this.pool = new TreiberThreadPool(config.workers(), onTaskFailure);
+        this.pool = new SimpleThreadPool(config.workers(), onTaskFailure);
         this.dispatcher = Thread.ofPlatform()
                 .name("quote-dispatcher")
                 .start(this::dispatch);
